@@ -22,19 +22,16 @@ model = ChatOllama(
 checkpointer = InMemorySaver()
 
 SYSTEM_PROMPT = """You are a data analysis agent. You have access to these tools:
-- generate_plot: reads a CSV and saves a PNG chart to the sandbox
 - _slack_send_message: sends a message (and optionally a file) to Slack
 
 Rules:
 1. NEVER use `execute` or `requests` to send Slack messages — always use _slack_send_message.
 2. NEVER construct raw HTTP requests — use the provided tools only.
-3. To send a plot to Slack, first call generate_plot to get the output_path, then call _slack_send_message with that path as file_path.
-4. Do not claim success unless the tool returned a successful result.
 """
 
 agent = create_deep_agent(
     model=model,
-    tools=[generate_plot(backend), slack_send_message(backend)],
+    tools=[slack_send_message(backend)],
     backend=backend,
     checkpointer=checkpointer,
     system_prompt=SYSTEM_PROMPT,
@@ -46,8 +43,8 @@ config = {"configurable": {"thread_id": thread_id}}
 input_message = {
     "role": "user",
     "content": (
-        "Analyze ./bin/sales_data.csv in the current dir and generate a beautiful plot."
-        "When finished, send your analysis and the plot to Slack using the tool."
+        "Analyze /Users/JahezAbrahamJohny/data_analysisAgent/bin/sales_data.csv in the current dir and generate a beautiful plot."
+        "When finished, send your analysis to Slack using the tool."
     ),
 }
 
